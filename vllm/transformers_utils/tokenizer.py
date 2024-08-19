@@ -186,11 +186,15 @@ def detokenize_incrementally(
         else:
             read_offset = max(len(output_tokens) - 1, 0)
     else:
-        # Put new_token_id in a list so skip_special_tokens is respected
-        new_tokens = tokenizer.convert_ids_to_tokens(
-            [new_token_id], skip_special_tokens=skip_special_tokens)
+        # If the new token id is out of bounds, return an empty string.
+        if new_token_id >= len(tokenizer):
+            new_tokens = [""]
+        else:
+            # Put new_token_id in a list so skip_special_tokens is respected
+            new_tokens = tokenizer.convert_ids_to_tokens(
+                [new_token_id], skip_special_tokens=skip_special_tokens)
         output_tokens = prev_tokens + new_tokens
-
+  
     # The prefix text is necessary only to defeat cleanup algorithms in
     # the decode which decide to add a space or not depending on the
     # surrounding ids.
